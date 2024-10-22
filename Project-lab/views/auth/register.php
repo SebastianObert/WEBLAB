@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <div class="mt-3 text-xs flex items-center justify-center gap-5">
                 <p>Sudah Register?</p>
-                <a href="login1.html">
+                <a href="login.html">
                 <button class=" py-2 px-5 border-blue-600 bg-blue-600 text-white hover:text-indigo-700 border rounded-xl hover:bg-transparent transition ease-in-out delay-75 font-semibold">Login</button>
                 </a>
             </div>
