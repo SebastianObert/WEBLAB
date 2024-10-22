@@ -36,7 +36,7 @@ $mysqli->close();
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-l from-slate-600 to-slate-800 text-white">
+<body class="bg-gradient-to-l from-slate-600 to-slate-800 text-white font-[poppins]">
 
 <!-- Navbar -->
 <nav class="p-4">
