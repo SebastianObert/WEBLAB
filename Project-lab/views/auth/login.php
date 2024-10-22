@@ -51,8 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <h1 class="text-3xl block text-center font-semibold"><i class="fa-solid fa-user"></i> Sign In</h1>
             <hr class="mt-3">
             <div class="mt-3">
-                <label for="username" class="block text-base mb-2">Username</label>
-                <input type="text" id="username" class="border w-full text-base px-4 py-2 focus:outline-none focus:ring-0 focus:border-gray-600 rounded-lg" placeholder="Masukkan Username..." />
+                <label for="email" class="block text-base mb-2">Email</label>
+                <input type="text" id="username" class="border w-full text-base px-4 py-2 focus:outline-none focus:ring-0 focus:border-gray-600 rounded-lg" placeholder="Masukkan Email..." />
             </div>
             <div class="mt-3">
                 <label for="password" class="block text-base mb-2">Password</label>
