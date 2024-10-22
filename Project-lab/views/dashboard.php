@@ -36,9 +36,8 @@ $mysqli->close();
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-gradient-to-l from-slate-600 to-slate-800 text-white">
 
-<body class="bg-gradient-to-l from-slate-600 to-slate-800 text-white font-[poppins]">
-    
 <!-- Navbar -->
 <nav class="p-4">
     <div class="container mx-auto w-10/12 flex justify-between items-center">
@@ -64,11 +63,11 @@ $mysqli->close();
     </div>
 
     <div class="flex items-center justify-center">
-    <div class=" bg-gray-300 w-1/2 p-6 border-2 border-violet-800 rounded-lg shadow-md shadow-violet-200 hover:shadow-violet-500 transition ease-in-out delay-75">
-        <h2 class="text-2xl font-semibold mb-4">Your To-Do Lists</h2>
+    <div class=" bg-zinc-50 w-1/2 p-6 border-2 text-black border-violet-800 rounded-lg shadow-md shadow-violet-200 hover:shadow-violet-500 transition ease-in-out delay-75">
+        <h2 class="text-2xl font-semibold mb-4 text-black">Your To-Do Lists</h2>
         <ul class="space-y-4">
             <!-- Jika tidak ada daftar to-do -->
-            <li class="bg-gray-400 p-4 rounded-md text-center border border-black">
+            <li class="bg-zinc-100 p-4 text-center border border-black">
                 No to-do lists available.
                 <a href="create_todo.php" class="bg-violet-600 hover:bg-white hover:text-black text-white px-6 py-2 rounded-md shadow-lg transition ease-in-out delay-75">
                     Create New To-Do List
@@ -76,13 +75,13 @@ $mysqli->close();
             </li>
 
             <!-- Contoh daftar to-do -->
-            <li class="bg-gray-400 p-4 rounded-md flex justify-between items-center border border-black">
+            <li class="bg-zinc-100 p-4 flex justify-between items-center border border-black">
                 <a href="view_tasks.php?id=1" class="text-lg font-semibold hover:text-violet-300 transition ease-in-out delay-75">Sample To-Do List 1</a>
                 <button class="text-red-400 hover:text-red-600 transition ease-in-out delay-75" onclick="return confirm('Are you sure you want to delete this list?');">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </li>
-            <li class="bg-gray-400 p-4 rounded-md flex justify-between items-center transition ease-in-out border border-black">
+            <li class="bg-zinc-100 p-4 flex justify-between items-center transition ease-in-out border border-black">
                 <a href="view_tasks.php?id=2" class="text-lg hover:text-violet-300 transition ease-in-out delay-75 font-semibold">Sample To-Do List 2</a>
                 <button class="text-red-400 hover:text-red-600" onclick="return confirm('Are you sure you want to delete this list?');">
                     <i class="fa-solid fa-trash"></i>
@@ -102,4 +101,3 @@ $mysqli->close();
 
 </body>
 </html>
-
