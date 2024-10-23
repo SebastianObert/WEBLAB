@@ -15,21 +15,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_SESSION['user_id'];
 
     if (!empty($title)) {
-        $sql = "INSERT INTO todo_lists (user_id, title, description, due_date, priority, color) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("isssss", $user_id, $title, $description, $due_date, $priority, $color);
+        $mysqli->begin_transaction();
 
-        if ($stmt->execute()) {
-            header("Location: dashboard.php");
-            exit();
-        } else {
-            $error = "Error creating to-do list.";
+        try {
+            $sql = "INSERT INTO todo_lists (user_id, title, description, due_date, priority, color) VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("isssss", $user_id, $title, $description, $due_date, $priority, $color);
+
+            if ($stmt->execute()) {
+                $todo_id = $mysqli->insert_id;
+
+                $task_sql = "INSERT INTO tasks (todo_id, description, status) VALUES (?, ?, 'incomplete')";
+                $task_stmt = $mysqli->prepare($task_sql);
+                $task_stmt->bind_param("is", $todo_id, $description);
+
+                if ($task_stmt->execute()) {
+                    // Commit the transaction
+                    $mysqli->commit();
+                    header("Location: dashboard.php");
+                    exit();
+                } else {
+                    throw new Exception("Error creating initial task: " . $task_stmt->error);
+                }
+            } else {
+                throw new Exception("Error creating to-do list: " . $stmt->error);
+            }
+        } catch (Exception $e) {
+            $mysqli->rollback();
+            $error = $e->getMessage();
         }
     } else {
         $error = "Title cannot be empty.";
     }
 }
 ?>
+
+<?php if (isset($error)): ?>
+    <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+<?php endif; ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">
