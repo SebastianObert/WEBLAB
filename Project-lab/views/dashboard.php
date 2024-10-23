@@ -9,10 +9,35 @@ include '../config/database.php';
 
 $user_id = $_SESSION['user_id'];
 
-$stmt = $mysqli->prepare("SELECT id, title, description, due_date, priority, color FROM todo_lists WHERE user_id = ?");
+// Fetching the user's username
+$stmt = $mysqli->prepare("SELECT username FROM users WHERE id = ?");
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
-$stmt->bind_result($todo_id, $title, $description, $due_date, $priority, $color);
+$stmt->bind_result($username);
+$stmt->fetch();
+$stmt->close();
+
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+
+$filter_sql = "
+    SELECT tl.id AS todo_id, tl.title, tl.description, tl.due_date, tl.priority, tl.color, t.status 
+    FROM todo_lists tl 
+    LEFT JOIN tasks t ON tl.id = t.todo_id 
+    WHERE tl.user_id = ?
+";
+
+if ($filter !== 'all') {
+    $filter_sql .= " AND t.status = ?";
+}
+
+$stmt = $mysqli->prepare($filter_sql);
+if ($filter !== 'all') {
+    $stmt->bind_param('is', $user_id, $filter);
+} else {
+    $stmt->bind_param('i', $user_id);
+}
+$stmt->execute();
+$stmt->bind_result($todo_id, $title, $description, $due_date, $priority, $color, $status);
 $todos = [];
 
 while ($stmt->fetch()) {
@@ -22,7 +47,8 @@ while ($stmt->fetch()) {
         'description' => $description,
         'due_date' => $due_date,
         'priority' => $priority,
-        'color' => $color
+        'color' => $color,
+        'status' => $status,
     ];
 }
 
@@ -44,7 +70,7 @@ $mysqli->close();
 </head>
 <body class="bg-gradient-to-l from-slate-600 to-slate-800 text-white font-[poppins]">
 
-<!-- Navbar -->
+
 <nav class="p-4">
     <div class="container mx-auto w-10/12 flex justify-between items-center">
         <a href="#" class="text-2xl font-bold text-indigo-400">Dailyze</a>
@@ -59,11 +85,20 @@ $mysqli->close();
     </div>
 </nav>
 
-<!-- Main Content -->
+
 <div class="container mx-auto mt-10 p-6">
     <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold mb-2">Welcome, <span class="text-indigo-400">[Username]</span></h1>
+        <h1 class="text-4xl font-bold mb-2">Welcome, <span class="text-indigo-400"><?php echo htmlspecialchars($username); ?></span></h1>
         <p class="text-gray-400">Your personalized to-do list dashboard</p>
+    </div>
+
+    
+    <div class="mb-4 text-center">
+        <a href="?filter=all" class="bg-violet-600 hover:bg-white hover:text-black text-white px-4 py-2 rounded-md shadow-lg transition ease-in-out delay-75">All Tasks</a>
+        <a href="?filter=incomplete" class="bg-violet-600 hover:bg-white hover:text-black text-white px-4 py-2 rounded-md shadow-lg transition ease-in-out delay-75">Incomplete</a>
+        <a href="?filter=complete" class="bg-violet-600 hover:bg-white hover:text-black text-white px-4 py-2 rounded-md shadow-lg transition ease-in-out delay-75">Complete</a>
+        <a href="?filter=in progress" class="bg-violet-600 hover:bg-white hover:text-black text-white px-4 py-2 rounded-md shadow-lg transition ease-in-out delay-75">In Progress</a>
+        <a href="?filter=overdue" class="bg-violet-600 hover:bg-white hover:text-black text-white px-4 py-2 rounded-md shadow-lg transition ease-in-out delay-75">Overdue</a>
     </div>
 
     <div class="flex items-center justify-center">
@@ -86,9 +121,25 @@ $mysqli->close();
                                 <p class="text-gray-500">Due: <?php echo htmlspecialchars($todo['due_date']); ?></p>
                                 <p class="text-gray-500">Priority: <?php echo htmlspecialchars($todo['priority']); ?></p>
                             </div>
-                            <button class="text-red-400 hover:text-red-600 transition ease-in-out delay-75" onclick="return confirm('Are you sure you want to delete this list?');">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
+                            <div>
+ 
+                                <form action="update_task_status.php" method="post" class="inline">
+                                    <input type="hidden" name="todo_id" value="<?php echo $todo['id']; ?>">
+                                    <select name="status" onchange="this.form.submit()" class="bg-gray-700 text-white rounded-md">
+                                        <option value="incomplete" <?php echo ($todo['status'] === 'incomplete') ? 'selected' : ''; ?>>Incomplete</option>
+                                        <option value="in progress" <?php echo ($todo['status'] === 'in progress') ? 'selected' : ''; ?>>In Progress</option>
+                                        <option value="complete" <?php echo ($todo['status'] === 'complete') ? 'selected' : ''; ?>>Complete</option>
+                                        <option value="overdue" <?php echo ($todo['status'] === 'overdue') ? 'selected' : ''; ?>>Overdue</option>
+                                    </select>
+                                </form>
+                              
+                                <form action="delete_todo.php" method="post" class="inline ml-2">
+                                    <input type="hidden" name="todo_id" value="<?php echo $todo['id']; ?>">
+                                    <button type="submit" onclick="return confirm('Are you sure you want to delete this list?');" class="text-red-400 hover:text-red-600 transition ease-in-out delay-75">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </li>
                     <?php endforeach; ?>
                 <?php endif; ?>
