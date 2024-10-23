@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container mx-auto mt-10 p-6 max-w-lg bg-gray-800 rounded-lg shadow-lg">
     <h2 class="text-3xl font-bold mb-6 text-center text-indigo-400">Create New To-Do List</h2>
     <?php if (isset($error)): ?>
-        <div class="alert alert-danger text-red-500"><?php echo htmlspecialchars($error); ?></div>
+        <div class="alert alert-danger text-red-500 mb-4"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>
     <form action="" method="post">
         <div class="mb-4">
