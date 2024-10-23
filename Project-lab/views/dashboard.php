@@ -9,7 +9,6 @@ include '../config/database.php';
 
 $user_id = $_SESSION['user_id'];
 
-// Fetching the user's username
 $stmt = $mysqli->prepare("SELECT username FROM users WHERE id = ?");
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
@@ -19,6 +18,8 @@ $stmt->close();
 
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
 $filter_sql = "
     SELECT tl.id AS todo_id, tl.title, tl.description, tl.due_date, tl.priority, tl.color, t.status 
     FROM todo_lists tl 
@@ -26,16 +27,34 @@ $filter_sql = "
     WHERE tl.user_id = ?
 ";
 
+$params = [$user_id];
+
+    if (!empty($search)) {
+    $filter_sql .= " AND (tl.title LIKE ? OR tl.description LIKE ?)";
+    $params[] = '%' . $search . '%'; 
+    $params[] = '%' . $search . '%'; 
+}
+
 if ($filter !== 'all') {
     $filter_sql .= " AND t.status = ?";
+     $params[] = $filter;
 }
 
 $stmt = $mysqli->prepare($filter_sql);
-if ($filter !== 'all') {
-    $stmt->bind_param('is', $user_id, $filter);
+
+if (count($params) > 0) {
+    $types = str_repeat('i', 1); 
+    if (!empty($search)) {
+        $types .= str_repeat('s', 2); 
+    }
+    if ($filter !== 'all') {
+        $types .= 's'; 
+    }
+    $stmt->bind_param($types, ...$params);
 } else {
     $stmt->bind_param('i', $user_id);
 }
+
 $stmt->execute();
 $stmt->bind_result($todo_id, $title, $description, $due_date, $priority, $color, $status);
 $todos = [];
@@ -92,6 +111,12 @@ $mysqli->close();
         <p class="text-gray-400">Your personalized to-do list dashboard</p>
     </div>
 
+     <div class="mb-4 text-center">
+       <form method="GET" class="mb-4">
+    <input type="text" name="search" placeholder="Search tasks..." class="bg-gray-200 text-black rounded-md p-2">
+    <button type="submit" class="bg-violet-600 text-white rounded-md px-4">Search</button>
+    </form>
+    </div>
     
     <div class="mb-4 text-center">
         <a href="?filter=all" class="bg-violet-600 hover:bg-white hover:text-black text-white px-4 py-2 rounded-md shadow-lg transition ease-in-out delay-75">All Tasks</a>
