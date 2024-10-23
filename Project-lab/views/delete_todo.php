@@ -1,27 +1,23 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: auth/login.php");
     exit();
 }
-require_once '../config/database.php';
 
-if (isset($_GET['id'])) {
-    $todo_id = $_GET['id'];
-    $user_id = $_SESSION['user_id'];
+include '../config/database.php';
 
-    $sql = "DELETE FROM todo_lists WHERE id = ? AND user_id = ?";
-    $stmt = $mysqli->prepare($sql);
-    $stmt->bind_param("ii", $todo_id, $user_id);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $todo_id = $_POST['id'];
 
+    $stmt = $mysqli->prepare("DELETE FROM todo_lists WHERE id = ? AND user_id = ?");
+    $stmt->bind_param('ii', $todo_id, $_SESSION['user_id']);
     if ($stmt->execute()) {
-        header("Location: dashboard.php");
-        exit();
+        header("Location: dashboard.php?message=To-do list deleted successfully.");
     } else {
-        $error = "Error deleting to-do list.";
+        header("Location: dashboard.php?message=Error deleting to-do list.");
     }
-} else {
-    header("Location: dashboard.php");
-    exit();
+    $stmt->close();
 }
-?>
+
+$mysqli->close();
