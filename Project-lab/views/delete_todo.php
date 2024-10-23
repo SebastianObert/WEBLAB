@@ -8,10 +8,11 @@ if (!isset($_SESSION['user_id'])) {
 include '../config/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $todo_id = $_POST['id'];
+    $todo_id = $_POST['todo_id']; 
 
     $stmt = $mysqli->prepare("DELETE FROM todo_lists WHERE id = ? AND user_id = ?");
     $stmt->bind_param('ii', $todo_id, $_SESSION['user_id']);
+    
     if ($stmt->execute()) {
         header("Location: dashboard.php?message=To-do list deleted successfully.");
     } else {
