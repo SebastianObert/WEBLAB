@@ -22,5 +22,5 @@ CREATE TABLE tasks (
     todo_id INT NOT NULL,
     description TEXT NOT NULL,
     status ENUM('incomplete', 'complete') NOT NULL DEFAULT 'incomplete',
-    FOREIGN KEY (todo_id) REFERENCES todos(id)
+    FOREIGN KEY (todo_id) REFERENCES todo_lists(id) ON DELETE CASCADE
 );
