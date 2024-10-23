@@ -24,3 +24,9 @@ CREATE TABLE tasks (
     status ENUM('incomplete', 'complete') NOT NULL DEFAULT 'incomplete',
     FOREIGN KEY (todo_id) REFERENCES todo_lists(id) ON DELETE CASCADE
 );
+
+ALTER TABLE todo_lists
+ADD COLUMN description TEXT,
+ADD COLUMN due_date DATE,
+ADD COLUMN priority ENUM('Low', 'Medium', 'High') DEFAULT 'Medium',
+ADD COLUMN color VARCHAR(7) DEFAULT '#ffffff';
