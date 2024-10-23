@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script>
         var typed = new Typed(".auto-type", {
             strings: [
-                "Selamat Datang di Taskly",
+                "Selamat Datang di Dailyze",
                 "Kelola tugas harian Anda dengan mudah dan teratur",
                 "Tetap produktif dengan daftar tugas yang selalu terupdate",
                 "Sederhanakan rencana harian Anda dan capai lebih banyak"
