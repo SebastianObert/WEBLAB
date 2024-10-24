@@ -66,6 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <i class="fa-solid fa-right-to-bracket"></i>&nbsp;&nbsp;Login
                     </button>
                 </div>
+                 <div class="mt-3 text-xs flex items-center justify-center">
+                    <a href="forgot_password.php" class="text-blue-600 hover:underline">Forgot Password?</a>
+                </div>
             </form>
 
             <div class="mt-5 grid grid-cols-3 items-center">
