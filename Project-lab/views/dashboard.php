@@ -18,7 +18,7 @@ $stmt->close();
 
 $filter = isset($_GET['filter']) ? htmlspecialchars($_GET['filter']) : 'all';
 
-$search = isset($_GET['search']) ? htmlspecialchars(trim($_GET['search'])) : '';
+$search = isset($_GET['search']) ? trim(htmlspecialchars($_GET['search'])) : '';
 
 $filter_sql = "
     SELECT tl.id AS todo_id, tl.title, tl.description, tl.due_date, tl.priority, tl.color, t.status 
@@ -42,15 +42,19 @@ if ($filter !== 'all') {
 
 $stmt = $mysqli->prepare($filter_sql);
 
-$types = str_repeat('i', 1); 
-if (!empty($search)) {
-    $types .= str_repeat('s', 2); 
-}
-if ($filter !== 'all') {
-    $types .= 's'; 
+if (count($params) > 0) {
+    $types = str_repeat('i', 1); 
+    if (!empty($search)) {
+        $types .= str_repeat('s', 2); 
+    }
+    if ($filter !== 'all') {
+        $types .= 's'; 
+    }
+    $stmt->bind_param($types, ...$params);
+} else {
+    $stmt->bind_param('i', $user_id);
 }
 
-$stmt->bind_param($types, ...$params);
 $stmt->execute();
 $stmt->bind_result($todo_id, $title, $description, $due_date, $priority, $color, $status);
 $todos = [];
@@ -106,12 +110,12 @@ $mysqli->close();
     </div>
 
     <div class="mb-4 text-center">
-        <form method="GET" class="mb-4">
+       <form method="GET" class="mb-4">
             <input type="text" name="search" placeholder="Search tasks..." class="bg-gray-200 text-black rounded-md p-2" value="<?php echo htmlspecialchars($search); ?>">
             <button type="submit" class="bg-violet-600 text-white rounded-md px-4">Search</button>
         </form>
     </div>
-
+    
     <div class="mb-4 text-center">
         <a href="?filter=all" class="bg-violet-600 hover:bg-white hover:text-black text-white px-4 py-2 rounded-md shadow-lg transition ease-in-out delay-75">All Tasks</a>
         <a href="?filter=incomplete" class="bg-violet-600 hover:bg-white hover:text-black text-white px-4 py-2 rounded-md shadow-lg transition ease-in-out delay-75">Incomplete</a>
@@ -164,6 +168,11 @@ $mysqli->close();
             </ul>
         </div>
     </div>
+
+    <div class="mt-6 flex justify-center gap-4">
+        <a href="create_todo.php" class="bg-violet-600 hover:bg-white hover:text-black text-white px-6 py-2 rounded-md shadow-lg transition ease-in-out delay-75">Create New To-Do List</a>
+    </div>
 </div>
+
 </body>
 </html>
