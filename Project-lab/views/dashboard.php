@@ -16,9 +16,9 @@ $stmt->bind_result($username);
 $stmt->fetch();
 $stmt->close();
 
-$filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+$filter = isset($_GET['filter']) ? htmlspecialchars($_GET['filter']) : 'all';
 
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$search = isset($_GET['search']) ? htmlspecialchars(trim($_GET['search'])) : '';
 
 $filter_sql = "
     SELECT tl.id AS todo_id, tl.title, tl.description, tl.due_date, tl.priority, tl.color, t.status 
@@ -29,7 +29,7 @@ $filter_sql = "
 
 $params = [$user_id];
 
-    if (!empty($search)) {
+if (!empty($search)) {
     $filter_sql .= " AND (tl.title LIKE ? OR tl.description LIKE ?)";
     $params[] = '%' . $search . '%'; 
     $params[] = '%' . $search . '%'; 
@@ -37,24 +37,20 @@ $params = [$user_id];
 
 if ($filter !== 'all') {
     $filter_sql .= " AND t.status = ?";
-     $params[] = $filter;
+    $params[] = $filter;
 }
 
 $stmt = $mysqli->prepare($filter_sql);
 
-if (count($params) > 0) {
-    $types = str_repeat('i', 1); 
-    if (!empty($search)) {
-        $types .= str_repeat('s', 2); 
-    }
-    if ($filter !== 'all') {
-        $types .= 's'; 
-    }
-    $stmt->bind_param($types, ...$params);
-} else {
-    $stmt->bind_param('i', $user_id);
+$types = str_repeat('i', 1); 
+if (!empty($search)) {
+    $types .= str_repeat('s', 2); 
+}
+if ($filter !== 'all') {
+    $types .= 's'; 
 }
 
+$stmt->bind_param($types, ...$params);
 $stmt->execute();
 $stmt->bind_result($todo_id, $title, $description, $due_date, $priority, $color, $status);
 $todos = [];
@@ -62,12 +58,12 @@ $todos = [];
 while ($stmt->fetch()) {
     $todos[] = [
         'id' => $todo_id,
-        'title' => $title,
-        'description' => $description,
-        'due_date' => $due_date,
-        'priority' => $priority,
-        'color' => $color,
-        'status' => $status,
+        'title' => htmlspecialchars($title),
+        'description' => htmlspecialchars($description),
+        'due_date' => htmlspecialchars($due_date),
+        'priority' => htmlspecialchars($priority),
+        'color' => htmlspecialchars($color),
+        'status' => htmlspecialchars($status),
     ];
 }
 
@@ -89,7 +85,6 @@ $mysqli->close();
 </head>
 <body class="bg-gradient-to-l from-slate-600 to-slate-800 text-white font-[poppins]">
 
-
 <nav class="p-4">
     <div class="container mx-auto w-10/12 flex justify-between items-center">
         <a href="#" class="text-2xl font-bold text-indigo-400">Dailyze</a>
@@ -104,20 +99,19 @@ $mysqli->close();
     </div>
 </nav>
 
-
 <div class="container mx-auto mt-10 p-6">
     <div class="text-center mb-8">
         <h1 class="text-4xl font-bold mb-2">Welcome, <span class="text-indigo-400"><?php echo htmlspecialchars($username); ?></span></h1>
         <p class="text-gray-400">Your personalized to-do list dashboard</p>
     </div>
 
-     <div class="mb-4 text-center">
-       <form method="GET" class="mb-4">
-    <input type="text" name="search" placeholder="Search tasks..." class="bg-gray-200 text-black rounded-md p-2">
-    <button type="submit" class="bg-violet-600 text-white rounded-md px-4">Search</button>
-    </form>
+    <div class="mb-4 text-center">
+        <form method="GET" class="mb-4">
+            <input type="text" name="search" placeholder="Search tasks..." class="bg-gray-200 text-black rounded-md p-2" value="<?php echo htmlspecialchars($search); ?>">
+            <button type="submit" class="bg-violet-600 text-white rounded-md px-4">Search</button>
+        </form>
     </div>
-    
+
     <div class="mb-4 text-center">
         <a href="?filter=all" class="bg-violet-600 hover:bg-white hover:text-black text-white px-4 py-2 rounded-md shadow-lg transition ease-in-out delay-75">All Tasks</a>
         <a href="?filter=incomplete" class="bg-violet-600 hover:bg-white hover:text-black text-white px-4 py-2 rounded-md shadow-lg transition ease-in-out delay-75">Incomplete</a>
@@ -147,7 +141,6 @@ $mysqli->close();
                                 <p class="text-gray-500">Priority: <?php echo htmlspecialchars($todo['priority']); ?></p>
                             </div>
                             <div>
- 
                                 <form action="update_task_status.php" method="post" class="inline">
                                     <input type="hidden" name="todo_id" value="<?php echo $todo['id']; ?>">
                                     <select name="status" onchange="this.form.submit()" class="bg-gray-700 text-white rounded-md">
@@ -171,11 +164,6 @@ $mysqli->close();
             </ul>
         </div>
     </div>
-
-    <div class="mt-6 flex justify-center gap-4">
-        <a href="create_todo.php" class="bg-violet-600 hover:bg-white hover:text-black text-white px-6 py-2 rounded-md shadow-lg transition ease-in-out delay-75">Create New To-Do List</a>
-    </div>
 </div>
-
 </body>
 </html>
