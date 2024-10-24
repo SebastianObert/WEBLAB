@@ -21,10 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header("Location: ../dashboard.php");
             exit();
         } else {
-            echo "Invalid password.";
+            echo htmlspecialchars("Invalid password.", ENT_QUOTES);
         }
     } else {
-        echo "No user found with that email.";
+        echo htmlspecialchars("No user found with that email.", ENT_QUOTES);
     }
 
     $stmt->close();
