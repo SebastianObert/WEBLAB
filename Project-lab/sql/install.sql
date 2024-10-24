@@ -28,3 +28,7 @@ CREATE TABLE tasks (
     status ENUM('incomplete', 'in progress', 'complete', 'overdue') NOT NULL DEFAULT 'incomplete',
     FOREIGN KEY (todo_id) REFERENCES todo_lists(id) ON DELETE CASCADE
 );
+
+ALTER TABLE users ADD COLUMN reset_token VARCHAR(255) DEFAULT NULL;
+ALTER TABLE users ADD COLUMN reset_token_expire DATETIME DEFAULT NULL;
+
